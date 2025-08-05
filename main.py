@@ -1,9 +1,15 @@
-from flask import Flask, jsonify
 import os
 from datetime import datetime, timedelta
+from flask import Flask, jsonify, request, abort
+from pyngrok import ngrok
 
-BASE_PATH = r'D:\gStorage\RECORD_FILE'
+# =========== CONFIGURAÇÕES ==============
+BASE_PATH = r'D:\gStorage\RECORD_FILE' # Caminho padrão da TecnoMobile
+TOKEN_API = "Mark_Kross" # Auth Token da API
+PORTA_API = 5000 # Porta que a API ta rodando
+TOKEN_NGROK = "não vou colocar meu token do ngrok no github nem a pau, depois do commit eu coloco" # Token do Ngrok
 
+# ========== FLASK APP ===================
 app = Flask(__name__)
 
 def get_gravacao():
@@ -35,9 +41,25 @@ def get_gravacao():
         "data_mais_recente": data_mais_recente.strftime('%d/%m/%Y %H:%M:%S') if data_mais_recente else None
     }
 
+# ============= REST API ===================
+
+@app.before_request
+def autenticar():
+    token = request.headers.get("Authorization")
+    if token != f"Bearer {TOKEN_API}":
+        abort(401, description="Token Inválido/Faltando.")
+
 @app.route("/gravacoes", methods=["GET"])
 def gravacoes():
     return jsonify(get_gravacao())
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # Configura o Token e inicia o tunel
+    ngrok.set_auth_token(TOKEN_NGROK)
+    public_url = ngrok.connect(PORTA_API, "http")
+
+    # Endpoint do Tunel
+    print(f'API disponivel em: {public_url}/gravacoes')
+
+    # Roda o server Flask
+    app.run(port=PORTA_API)
