@@ -1,7 +1,10 @@
+from flask import Flask, jsonify
 import os
 from datetime import datetime, timedelta
 
 BASE_PATH = r'D:\gStorage\RECORD_FILE'
+
+app = Flask(__name__)
 
 def get_gravacao():
     tolerancia = datetime.now() - timedelta(days=3)
@@ -27,10 +30,14 @@ def get_gravacao():
             if data_mais_recente is None or data_mod > data_mais_recente:
                 data_mais_recente = data_mod
 
-    for v in veiculos:
-        print(f"{v['Veiculo']}: Última Gravação = {v['Ultima Gravação']} | Status = {v['Status']}")
-        print("\nData de modificação mais recente:", data_mais_recente.strftime('%d/%m/%Y %H:%M:%S'))
+    return {
+        "dados": veiculos,
+        "data_mais_recente": data_mais_recente.strftime('%d/%m/%Y %H:%M:%S') if data_mais_recente else None
+    }
 
+@app.route("/gravacoes", methods=["GET"])
+def gravacoes():
+    return jsonify(get_gravacao())
 
 if __name__ == "__main__":
-    get_gravacao()
+    app.run(host="0.0.0.0", port=5000)
