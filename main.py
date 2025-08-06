@@ -7,7 +7,7 @@ from pyngrok import ngrok
 BASE_PATH = r'D:\gStorage\RECORD_FILE' # Caminho padrão da TecnoMobile
 TOKEN_API = "Mark_Kross" # Auth Token da API
 PORTA_API = 5000 # Porta que a API ta rodando
-TOKEN_NGROK = "não vou colocar meu token do ngrok no github nem a pau, depois do commit eu coloco" # Token do Ngrok
+TOKEN_NGROK = "token ficticio" # Token do Ngrok
 
 # ========== FLASK APP ===================
 app = Flask(__name__)
@@ -38,7 +38,6 @@ def get_gravacao():
 
     return {
         "dados": veiculos,
-        "data_mais_recente": data_mais_recente.strftime('%d/%m/%Y %H:%M:%S') if data_mais_recente else None
     }
 
 # ============= REST API ===================
